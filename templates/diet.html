@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Planner - Diet and Workout Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d1b2a;
+            --secondary: #1b263b;
+            --accent: #e63946;
+            --accent-secondary: #2ec4b6;
+            --bg-dark: #0d1b2a;
+            --card-bg: rgba(27, 38, 59, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #a8dadc;
+            --success: #2ec4b6;
+            --warning: #f4a261;
+            --gradient-red: linear-gradient(135deg, #e63946 0%, #ff6b6b 100%);
+            --gradient-teal: linear-gradient(135deg, #2ec4b6 0%, #20a39e 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(230, 57, 70, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(46, 196, 182, 0.08) 0%, transparent 50%),
+                var(--bg-dark);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(13, 27, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1rem 1.2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--accent);
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .user-section {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 0 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-details h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-details p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(230, 57, 70, 0.1);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            border-radius: 10px;
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Meal Cards */
+        .meals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .meal-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(46, 196, 182, 0.3);
+        }
+
+        .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .meal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meal-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .meal-icon.breakfast {
+            background: linear-gradient(135deg, rgba(244, 162, 97, 0.2) 0%, rgba(244, 162, 97, 0.1) 100%);
+            color: var(--warning);
+        }
+
+        .meal-icon.lunch {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(230, 57, 70, 0.1) 100%);
+            color: var(--accent);
+        }
+
+        .meal-icon.dinner {
+            background: linear-gradient(135deg, rgba(46, 196, 182, 0.2) 0%, rgba(46, 196, 182, 0.1) 100%);
+            color: var(--accent-secondary);
+        }
+
+        .meal-icon.snack {
+            background: linear-gradient(135deg, rgba(168, 218, 220, 0.2) 0%, rgba(168, 218, 220, 0.1) 100%);
+            color: var(--text-secondary);
+        }
+
+        .meal-title h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .meal-title span {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .meal-calories {
+            text-align: right;
+        }
+
+        .meal-calories .value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+        }
+
+        .meal-calories .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .meal-items {
+            min-height: 100px;
+        }
+
+        .meal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .meal-item-info h4 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .meal-item-info span {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .meal-item-calories {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .meal-item-delete {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .meal-item-delete:hover {
+            color: var(--accent);
+        }
+
+        .add-meal-btn {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(46, 196, 182, 0.1);
+            border: 2px dashed rgba(46, 196, 182, 0.3);
+            border-radius: 12px;
+            color: var(--accent-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .add-meal-btn:hover {
+            background: rgba(46, 196, 182, 0.2);
+            border-color: var(--accent-secondary);
+        }
+
+        /* Empty State */
+        .empty-meals {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-meals i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-meals p {
+            font-size: 0.9rem;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: var(--gradient-teal);
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.8rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            width: 45px;
+            height: 45px;
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--secondary);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a8dadc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 1rem;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 5px 20px rgba(230, 57, 70, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <a href="/dashboard" class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Diet & Workout
+        </a>
+        
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                Dashboard
+            </a>
+            <a href="/diet" class="nav-item active">
+                <i class="fas fa-utensils"></i>
+                Diet Planner
+            </a>
+            <a href="/workout" class="nav-item">
+                <i class="fas fa-dumbbell"></i>
+                Workout Planner
+            </a>
+            <a href="/progress" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                Progress
+            </a>
+            <a href="/bmi" class="nav-item">
+                <i class="fas fa-calculator"></i>
+                BMI Calculator
+            </a>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <h4 id="userName">User</h4>
+                    <p id="userEmail">user@email.com</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <h1>Diet Planner 🍽️</h1>
+            <p>Track your meals and manage your daily calorie intake</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCalories">0</div>
+                <div class="stat-label">Calories Consumed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="targetCalories">2000</div>
+                <div class="stat-label">Daily Target</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="remainingCalories">2000</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="mealsCount">0</div>
+                <div class="stat-label">Meals Today</div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h3>Daily Calorie Progress</h3>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+            </div>
+            <div class="progress-text">
+                <span><span id="consumedText">0</span> kcal consumed</span>
+                <span><span id="remainingText">2000</span> kcal remaining</span>
+            </div>
+        </div>
+
+        <!-- Meals Grid -->
+        <div class="meals-grid">
+            <!-- Breakfast -->
+            <div class="meal-card">
+                <div class="meal-header">
+                    <div class="meal-title">
+                        <div class="meal-icon breakfast">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div>
+                            <h3>Breakfast</h3>
+                            <span id="breakfastCals">0 kcal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="meal-items" id="breakfastItems">
+                    <div class="empty-meals">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>No breakfast added</p>
+                    </div>
+                </div>
+                <button class="add-meal-btn" onclick="openModal('breakfast')">
+                    <i class="fas fa-plus"></i> Add Breakfast
+                </button>
+            </div>
+
+            <!-- Lunch -->
+            <div class="meal-card">
+                <div class="meal-header">
+                    <div class="meal-title">
+                        <div class="meal-icon lunch">
+                            <i class="fas fa-hamburger"></i>
+                        </div>
+                        <div>
+                            <h3>Lunch</h3>
+                            <span id="lunchCals">0 kcal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="meal-items" id="lunchItems">
+                    <div class="empty-meals">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>No lunch added</p>
+                    </div>
+                </div>
+                <button class="add-meal-btn" onclick="openModal('lunch')">
+                    <i class="fas fa-plus"></i> Add Lunch
+                </button>
+            </div>
+
+            <!-- Dinner -->
+            <div class="meal-card">
+                <div class="meal-header">
+                    <div class="meal-title">
+                        <div class="meal-icon dinner">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div>
+                            <h3>Dinner</h3>
+                            <span id="dinnerCals">0 kcal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="meal-items" id="dinnerItems">
+                    <div class="empty-meals">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>No dinner added</p>
+                    </div>
+                </div>
+                <button class="add-meal-btn" onclick="openModal('dinner')">
+                    <i class="fas fa-plus"></i> Add Dinner
+                </button>
+            </div>
+
+            <!-- Snacks -->
+            <div class="meal-card">
+                <div class="meal-header">
+                    <div class="meal-title">
+                        <div class="meal-icon snack">
+                            <i class="fas fa-cookie-bite"></i>
+                        </div>
+                        <div>
+                            <h3>Snacks</h3>
+                            <span id="snackCals">0 kcal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="meal-items" id="snackItems">
+                    <div class="empty-meals">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>No snacks added</p>
+                    </div>
+                </div>
+                <button class="add-meal-btn" onclick="openModal('snack')">
+                    <i class="fas fa-plus"></i> Add Snack
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Meal Modal -->
+    <div class="modal-overlay" id="mealModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 id="modalTitle">Add Meal</h2>
+            <form id="mealForm">
+                <input type="hidden" id="mealType">
+                <div class="form-group">
+                    <label for="foodName">Food Name</label>
+                    <input type="text" id="foodName" placeholder="e.g., Grilled Chicken Salad" required>
+                </div>
+                <div class="form-group">
+                    <label for="calories">Calories</label>
+                    <input type="number" id="calories" placeholder="e.g., 350" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Add Meal <i class="fas fa-plus"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentMealType = '';
+        let userData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            loadMeals();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/user');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                userData = data.user;
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userEmail').textContent = userData.email;
+                document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        async function loadMeals() {
+            const response = await fetch('/api/diet/today');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateUI(data);
+            }
+        }
+
+        function updateUI(data) {
+            const totalCals = data.total_calories;
+            const targetCals = data.recommended_calories;
+            const remaining = Math.max(targetCals - totalCals, 0);
+            const percentage = Math.min((totalCals / targetCals) * 100, 100);
+
+            // Update stats
+            document.getElementById('totalCalories').textContent = totalCals;
+            document.getElementById('targetCalories').textContent = targetCals;
+            document.getElementById('remainingCalories').textContent = remaining;
+            
+            let mealsCount = 0;
+            ['breakfast', 'lunch', 'dinner', 'snack'].forEach(type => {
+                mealsCount += data.meals[type] ? data.meals[type].length : 0;
+            });
+            document.getElementById('mealsCount').textContent = mealsCount;
+
+            // Update progress
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+            document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
+            document.getElementById('consumedText').textContent = totalCals;
+            document.getElementById('remainingText').textContent = remaining;
+
+            // Update meal cards
+            const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+            let totalMealCals = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 };
+
+            mealTypes.forEach(type => {
+                const container = document.getElementById(type + 'Items');
+                const calsDisplay = document.getElementById(type + 'Cals');
+                const meals = data.meals[type] || [];
+                
+                let html = '';
+                let typeCals = 0;
+                
+                if (meals.length > 0) {
+                    meals.forEach(meal => {
+                        typeCals += meal.calories;
+                        html += `
+                            <div class="meal-item">
+                                <div class="meal-item-info">
+                                    <h4>${meal.food_name}</h4>
+                                    <span>${meal.calories} kcal</span>
+                                </div>
+                                <button class="meal-item-delete" onclick="deleteMeal(${meal.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = `
+                        <div class="empty-meals">
+                            <i class="fas fa-plus-circle"></i>
+                            <p>No ${type} added</p>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+                calsDisplay.textContent = typeCals + ' kcal';
+                totalMealCals[type] = typeCals;
+            });
+        }
+
+        function openModal(mealType) {
+            currentMealType = mealType;
+            document.getElementById('mealType').value = mealType;
+            document.getElementById('modalTitle').textContent = 'Add ' + mealType.charAt(0).toUpperCase() + mealType.slice(1);
+            document.getElementById('mealModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('mealModal').classList.remove('active');
+            document.getElementById('mealForm').reset();
+        }
+
+        document.getElementById('mealModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('mealModal')) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('mealForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const mealData = {
+                meal_type: currentMealType,
+                food_name: document.getElementById('foodName').value,
+                calories: parseInt(document.getElementById('calories').value),
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            try {
+                const response = await fetch('/api/diet/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(mealData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeModal();
+                    loadMeals();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Failed to add meal');
+            }
+        });
+
+        async function deleteMeal(mealId) {
+            if (confirm('Are you sure you want to delete this meal?')) {
+                try {
+                    const response = await fetch('/api/diet/delete/' + mealId, {
+                        method: 'DELETE'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        loadMeals();
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    alert('Failed to delete meal');
+                }
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

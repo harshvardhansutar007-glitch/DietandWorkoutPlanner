@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress - Diet and Workout Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d1b2a;
+            --secondary: #1b263b;
+            --accent: #e63946;
+            --accent-secondary: #2ec4b6;
+            --bg-dark: #0d1b2a;
+            --card-bg: rgba(27, 38, 59, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #a8dadc;
+            --success: #2ec4b6;
+            --warning: #f4a261;
+            --gradient-red: linear-gradient(135deg, #e63946 0%, #ff6b6b 100%);
+            --gradient-teal: linear-gradient(135deg, #2ec4b6 0%, #20a39e 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(230, 57, 70, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(46, 196, 182, 0.08) 0%, transparent 50%),
+                var(--bg-dark);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(13, 27, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1rem 1.2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(230, 57, 70, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--accent);
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .user-section {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 0 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-details h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-details p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(230, 57, 70, 0.1);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            border-radius: 10px;
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-btn {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .time-btn:hover, .time-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.weight {
+            background: linear-gradient(135deg, rgba(244, 162, 97, 0.2), rgba(244, 162, 97, 0.1));
+            color: var(--warning);
+        }
+
+        .stat-icon.calories-in {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(230, 57, 70, 0.1));
+            color: var(--accent);
+        }
+
+        .stat-icon.calories-out {
+            background: linear-gradient(135deg, rgba(46, 196, 182, 0.2), rgba(46, 196, 182, 0.1));
+            color: var(--accent-secondary);
+        }
+
+        .stat-icon.workouts {
+            background: linear-gradient(135deg, rgba(168, 218, 220, 0.2), rgba(168, 218, 220, 0.1));
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive {
+            color: var(--accent-secondary);
+        }
+
+        .stat-change.negative {
+            color: var(--accent);
+        }
+
+        .chart-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 250px;
+            padding: 0 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-bar {
+            width: 40px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-bar.consumed {
+            background: var(--gradient-red);
+        }
+
+        .chart-bar.burned {
+            background: var(--gradient-teal);
+        }
+
+        .chart-bar .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--secondary);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .chart-bar:hover .tooltip {
+            opacity: 1;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 10px 0;
+        }
+
+        .chart-labels span {
+            width: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-color.consumed {
+            background: var(--accent);
+        }
+
+        .legend-color.burned {
+            background: var(--accent-secondary);
+        }
+
+        .history-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .history-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .history-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .history-date {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .history-stat {
+            text-align: right;
+        }
+
+        .history-stat .value {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .history-stat .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            width: 45px;
+            height: 45px;
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="/dashboard" class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Diet & Workout
+        </a>
+        
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                Dashboard
+            </a>
+            <a href="/diet" class="nav-item">
+                <i class="fas fa-utensils"></i>
+                Diet Planner
+            </a>
+            <a href="/workout" class="nav-item">
+                <i class="fas fa-dumbbell"></i>
+                Workout Planner
+            </a>
+            <a href="/progress" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                Progress
+            </a>
+            <a href="/bmi" class="nav-item">
+                <i class="fas fa-calculator"></i>
+                BMI Calculator
+            </a>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <h4 id="userName">User</h4>
+                    <p id="userEmail">user@email.com</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <h1>Progress Tracking 📊</h1>
+            <p>Monitor your fitness journey over time</p>
+        </div>
+
+        <div class="time-filter">
+            <button class="time-btn active" data-days="7">7 Days</button>
+            <button class="time-btn" data-days="14">14 Days</button>
+            <button class="time-btn" data-days="30">30 Days</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon weight">
+                    <i class="fas fa-weight"></i>
+                </div>
+                <div class="stat-value" id="avgWeight">--</div>
+                <div class="stat-label">Avg Weight (kg)</div>
+                <div class="stat-change" id="weightChange"></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon calories-in">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-value" id="avgConsumed">--</div>
+                <div class="stat-label">Avg Calories/Day</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon calories-out">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-value" id="avgBurned">--</div>
+                <div class="stat-label">Avg Burned/Day</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon workouts">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="stat-value" id="totalWorkouts">--</div>
+                <div class="stat-label">Total Workouts</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2>Calorie Balance</h2>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars" id="chartBars"></div>
+                <div class="chart-labels" id="chartLabels"></div>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-color consumed"></div>
+                    <span>Consumed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color burned"></div>
+                    <span>Burned</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="history-header">
+                <h2>Daily History</h2>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <p>No data available</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentDays = 7;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            loadProgress();
+            setupTimeFilters();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/user');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                document.getElementById('userName').textContent = data.user.name;
+                document.getElementById('userEmail').textContent = data.user.email;
+                document.getElementById('userAvatar').textContent = data.user.name.charAt(0).toUpperCase();
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        function setupTimeFilters() {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentDays = parseInt(btn.dataset.days);
+                    loadProgress();
+                });
+            });
+        }
+
+        async function loadProgress() {
+            const response = await fetch(`/api/progress/history?days=${currentDays}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                updateStats(data.progress);
+                renderChart(data.progress);
+                renderHistory(data.progress);
+            }
+        }
+
+        function updateStats(progress) {
+            if (progress.length === 0) {
+                document.getElementById('avgWeight').textContent = '--';
+                document.getElementById('avgConsumed').textContent = '--';
+                document.getElementById('avgBurned').textContent = '--';
+                document.getElementById('totalWorkouts').textContent = '--';
+                return;
+            }
+
+            const weights = progress.filter(p => p.weight).map(p => p.weight);
+            const avgWeight = weights.length > 0 ? (weights.reduce((a, b) => a + b, 0) / weights.length).toFixed(1) : '--';
+            document.getElementById('avgWeight').textContent = avgWeight;
+
+            const avgConsumed = Math.round(progress.reduce((a, b) => a + (b.calories_consumed || 0), 0) / progress.length);
+            document.getElementById('avgConsumed').textContent = avgConsumed;
+
+            const avgBurned = Math.round(progress.reduce((a, b) => a + (b.calories_burned || 0), 0) / progress.length);
+            document.getElementById('avgBurned').textContent = avgBurned;
+
+            const totalWorkouts = progress.filter(p => p.calories_burned > 0).length;
+            document.getElementById('totalWorkouts').textContent = totalWorkouts;
+
+            // Weight change
+            if (weights.length >= 2) {
+                const change = (weights[weights.length - 1] - weights[0]).toFixed(1);
+                const changeEl = document.getElementById('weightChange');
+                if (change > 0) {
+                    changeEl.textContent = `+${change} kg`;
+                    changeEl.className = 'stat-change negative';
+                } else if (change < 0) {
+                    changeEl.textContent = `${change} kg`;
+                    changeEl.className = 'stat-change positive';
+                } else {
+                    changeEl.textContent = 'No change';
+                    changeEl.className = 'stat-change';
+                }
+            }
+        }
+
+        function renderChart(progress) {
+            const barsContainer = document.getElementById('chartBars');
+            const labelsContainer = document.getElementById('chartLabels');
+            
+            if (progress.length === 0) {
+                barsContainer.innerHTML = '<p style="color: var(--text-secondary); text-align: center; width: 100%;">No data available</p>';
+                labelsContainer.innerHTML = '';
+                return;
+            }
+
+            const maxCalories = Math.max(...progress.map(p => Math.max(p.calories_consumed || 0, p.calories_burned || 0)), 100);
+            
+            let barsHtml = '';
+            let labelsHtml = '';
+            
+            progress.slice(-7).forEach((p, i) => {
+                const consumedHeight = ((p.calories_consumed || 0) / maxCalories) * 200;
+                const burnedHeight = ((p.calories_burned || 0) / maxCalories) * 200;
+                const date = new Date(p.date);
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                barsHtml += `
+                    <div style="display: flex; gap: 5px; align-items: flex-end;">
+                        <div class="chart-bar consumed" style="height: ${consumedHeight}px;">
+                            <div class="tooltip">${p.calories_consumed || 0} kcal</div>
+                        </div>
+                        <div class="chart-bar burned" style="height: ${burnedHeight}px;">
+                            <div class="tooltip">${p.calories_burned || 0} kcal</div>
+                        </div>
+                    </div>
+                `;
+                
+                labelsHtml += `<span>${dayName}</span>`;
+            });
+            
+            barsContainer.innerHTML = barsHtml;
+            labelsContainer.innerHTML = labelsHtml;
+        }
+
+        function renderHistory(progress) {
+            const list = document.getElementById('historyList');
+            
+            if (progress.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No history available</p></div>';
+                return;
+            }
+            
+            let html = '';
+            progress.reverse().forEach(p => {
+                const date = new Date(p.date);
+                const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                
+                html += `
+                    <div class="history-item">
+                        <div class="history-date">${dateStr}</div>
+                        <div class="history-stats">
+                            <div class="history-stat">
+                                <div class="value">${p.weight || '--'}</div>
+                                <div class="label">Weight (kg)</div>
+                            </div>
+                            <div class="history-stat">
+                                <div class="value">${p.calories_consumed || 0}</div>
+                                <div class="label">Consumed</div>
+                            </div>
+                            <div class="history-stat">
+                                <div class="value">${p.calories_burned || 0}</div>
+                                <div class="label">Burned</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

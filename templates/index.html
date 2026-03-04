@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet and Workout Planner - Your Personal Fitness Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d1b2a;
+            --secondary: #1b263b;
+            --accent: #e63946;
+            --accent-secondary: #2ec4b6;
+            --bg-dark: #0d1b2a;
+            --card-bg: rgba(27, 38, 59, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #a8dadc;
+            --success: #2ec4b6;
+            --warning: #f4a261;
+            --gradient-red: linear-gradient(135deg, #e63946 0%, #ff6b6b 100%);
+            --gradient-teal: linear-gradient(135deg, #2ec4b6 0%, #20a39e 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(230, 57, 70, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(46, 196, 182, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(27, 38, 59, 1) 0%, var(--bg-dark) 100%);
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape i {
+            font-size: 4rem;
+            color: var(--accent);
+        }
+
+        .shape:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { top: 20%; right: 15%; animation-delay: -5s; }
+        .shape:nth-child(3) { bottom: 30%; left: 20%; animation-delay: -10s; }
+        .shape:nth-child(4) { bottom: 10%; right: 10%; animation-delay: -15s; }
+        .shape:nth-child(5) { top: 50%; left: 5%; animation-delay: -7s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(20px) rotate(-5deg); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        nav.scrolled {
+            background: rgba(13, 27, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-red);
+            color: white;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230, 57, 70, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-secondary);
+            border: 2px solid var(--accent-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-secondary);
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 5% 4rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 700px;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1.2rem;
+            background: rgba(46, 196, 182, 0.1);
+            border: 1px solid rgba(46, 196, 182, 0.3);
+            border-radius: 50px;
+            color: var(--accent-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-red);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 550px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            animation: fadeInUp 0.8s ease 0.8s both;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-visual {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 450px;
+            height: 450px;
+            z-index: 0;
+        }
+
+        .hero-card {
+            position: absolute;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-card-1 {
+            top: 10%;
+            left: 0;
+            animation: cardFloat 6s infinite ease-in-out;
+        }
+
+        .hero-card-2 {
+            bottom: 20%;
+            right: 0;
+            animation: cardFloat 6s infinite ease-in-out 1s;
+        }
+
+        .hero-card-3 {
+            top: 40%;
+            left: 30%;
+            animation: cardFloat 6s infinite ease-in-out 2s;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .hero-card-icon.diet {
+            background: rgba(46, 196, 182, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        .hero-card-icon.workout {
+            background: rgba(230, 57, 70, 0.2);
+            color: var(--accent);
+        }
+
+        .hero-card-icon.bmi {
+            background: rgba(244, 162, 97, 0.2);
+            color: var(--warning);
+        }
+
+        .hero-card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .hero-card-value {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background: rgba(230, 57, 70, 0.1);
+            border-radius: 50px;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-red);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(230, 57, 70, 0.3);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon.diet {
+            background: linear-gradient(135deg, rgba(46, 196, 182, 0.2) 0%, rgba(46, 196, 182, 0.1) 100%);
+            color: var(--accent-secondary);
+        }
+
+        .feature-icon.workout {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(230, 57, 70, 0.1) 100%);
+            color: var(--accent);
+        }
+
+        .feature-icon.progress {
+            background: linear-gradient(135deg, rgba(244, 162, 97, 0.2) 0%, rgba(244, 162, 97, 0.1) 100%);
+            color: var(--warning);
+        }
+
+        .feature-icon.bmi {
+            background: linear-gradient(135deg, rgba(46, 196, 182, 0.2) 0%, rgba(46, 196, 182, 0.1) 100%);
+            color: var(--accent-secondary);
+        }
+
+        .feature-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 5%;
+            background: linear-gradient(180deg, transparent 0%, rgba(27, 38, 59, 0.5) 100%);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            z-index: 0;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 8rem 5%;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(13, 27, 42, 0.95);
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo i {
+            color: var(--accent);
+        }
+
+        .footer-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--secondary);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a8dadc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 1rem;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-switch a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .modal-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .form-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-visual {
+                display: none;
+            }
+            
+            .hero {
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .hero p {
+                margin: 0 auto 2.5rem;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 5%;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step::after {
+                display: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="floating-shapes">
+        <div class="shape"><i class="fas fa-dumbbell"></i></div>
+        <div class="shape"><i class="fas fa-apple-alt"></i></div>
+        <div class="shape"><i class="fas fa-running"></i></div>
+        <div class="shape"><i class="fas fa-heartbeat"></i></div>
+        <div class="shape"><i class="fas fa-user"></i></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Diet & Workout
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="/bmi">BMI Calculator</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="openModal('login')">Login</button>
+            <button class="btn btn-primary" onclick="openModal('register')">
+                Get Started <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i> Your Personal Fitness Journey Starts Here
+            </div>
+            <h1>Transform Your <span>Health</span> With Smart Planning</h1>
+            <p>Track your diet, plan your workouts, and achieve your fitness goals with our comprehensive Diet and Workout Planner. Your personal fitness companion is just a click away.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="openModal('register')">
+                    Start Free Trial <i class="fas fa-rocket"></i>
+                </button>
+                <a href="#features" class="btn btn-secondary">
+                    Learn More <i class="fas fa-info-circle"></i>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Workout Plans</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="hero-card hero-card-1">
+                <div class="hero-card-icon diet">
+                    <i class="fas fa-apple-alt"></i>
+                </div>
+                <div class="hero-card-title">Track Calories</div>
+                <div class="hero-card-value">2,500 kcal/day</div>
+            </div>
+            <div class="hero-card hero-card-2">
+                <div class="hero-card-icon workout">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="hero-card-title">Workout Time</div>
+                <div class="hero-card-value">45 mins today</div>
+            </div>
+            <div class="hero-card hero-card-3">
+                <div class="hero-card-icon bmi">
+                    <i class="fas fa-weight"></i>
+                </div>
+                <div class="hero-card-title">Your BMI</div>
+                <div class="hero-card-value">22.5 (Normal)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <span class="section-tag">Features</span>
+            <h2 class="section-title">Everything You Need</h2>
+            <p class="section-subtitle">Powerful tools to help you achieve your fitness goals faster and more efficiently.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon diet">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h3 class="feature-title">Diet Planning</h3>
+                <p class="feature-desc">Plan your meals, track calories, and get personalized diet recommendations based on your body metrics and goals.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon workout">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h3 class="feature-title">Workout Planner</h3>
+                <p class="feature-desc">Create custom workout routines, track your exercises, and monitor your progress with detailed analytics.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon progress">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">Progress Tracking</h3>
+                <p class="feature-desc">Visualize your fitness journey with charts and graphs. Track weight, calories, and workout completion.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon bmi">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3 class="feature-title">BMI Calculator</h3>
+                <p class="feature-desc">Calculate your Body Mass Index instantly and get personalized recommendations for your fitness goals.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon diet">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h3 class="feature-title">Water Tracking</h3>
+                <p class="feature-desc">Stay hydrated with our water intake tracker. Set daily goals and get reminders to drink water.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon workout">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3 class="feature-title">Goal Setting</h3>
+                <p class="feature-desc">Set realistic fitness goals and track your progress. Get motivation with achievement badges.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <span class="section-tag">How It Works</span>
+            <h2 class="section-title">Simple Steps to Success</h2>
+            <p class="section-subtitle">Get started in minutes and begin your transformation journey.</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Create Account</h3>
+                <p class="step-desc">Sign up for free and complete your profile with your body metrics and fitness goals.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Plan Your Day</h3>
+                <p class="step-desc">Use our diet and workout planners to create your daily fitness routine.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Track Progress</h3>
+                <p class="step-desc">Log your meals, workouts, and weight to monitor your fitness journey.</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Achieve Goals</h3>
+                <p class="step-desc">Watch your progress and celebrate your achievements as you reach your goals.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Life?</h2>
+            <p>Join thousands of others who have already started their fitness journey. Your transformation begins today.</p>
+            <button class="btn btn-primary" onclick="openModal('register')">
+                Get Started Now <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-heartbeat"></i>
+                    Diet & Workout
+                </div>
+                <p class="footer-desc">Your personal fitness companion for achieving health and wellness goals. Start your journey today!</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="/bmi">BMI Calculator</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="#" onclick="openModal('login')">Login</a></li>
+                    <li><a href="#" onclick="openModal('register')">Register</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="mailto:support@dietworkout.com">support@dietworkout.com</a></li>
+                    <li><a href="tel:+1234567890">+1 234 567 890</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Diet and Workout Planner. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="login">Login</button>
+                <button class="modal-tab" data-tab="register">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm">
+                <h2>Welcome Back!</h2>
+                <p>Login to continue your fitness journey</p>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Login <i class="fas fa-sign-in-alt"></i>
+                </button>
+                
+                <div class="modal-switch">
+                    Don't have an account? <a href="#" onclick="switchTab('register')">Sign Up</a>
+                </div>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" style="display: none;">
+                <h2>Create Account!</h2>
+                <p>Start your fitness journey today</p>
+                
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password" required>
+                </div>
+                
+                <div class="form-section-title">Body Metrics (Optional)</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registerAge">Age</label>
+                        <input type="number" id="registerAge" placeholder="Years">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerGender">Gender</label>
+                        <select id="registerGender">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registerWeight">Weight (kg)</label>
+                        <input type="number" id="registerWeight" placeholder="kg" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerHeight">Height (cm)</label>
+                        <input type="number" id="registerHeight" placeholder="cm">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerActivity">Activity Level</label>
+                    <select id="registerActivity">
+                        <option value="sedentary">Sedentary (little or no exercise)</option>
+                        <option value="light">Light (exercise 1-3 days/week)</option>
+                        <option value="moderate" selected>Moderate (exercise 3-5 days/week)</option>
+                        <option value="active">Active (exercise 6-7 days/week)</option>
+                        <option value="very_active">Very Active (hard exercise daily)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerGoal">Fitness Goal</label>
+                    <select id="registerGoal">
+                        <option value="weight_loss">Weight Loss</option>
+                        <option value="muscle_gain">Muscle Gain</option>
+                        <option value="maintain" selected>Maintain Weight</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Create Account <i class="fas fa-user-plus"></i>
+                </button>
+                
+                <div class="modal-switch">
+                    Already have an account? <a href="#" onclick="switchTab('login')">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Modal functions
+        function openModal(tab = 'login') {
+            const modal = document.getElementById('authModal');
+            modal.classList.add('active');
+            switchTab(tab);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.remove('active');
+        }
+
+        // Tab switching
+        document.querySelectorAll('.modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.modal-tab[data-tab="${tabName}"]`).classList.add('active');
+            
+            if (tabName === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('authModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('authModal')) {
+                closeModal();
+            }
+        });
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeModal();
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Login failed. Please try again.');
+            }
+        });
+
+        // Register form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                age: document.getElementById('registerAge').value || null,
+                gender: document.getElementById('registerGender').value || null,
+                weight: document.getElementById('registerWeight').value || null,
+                height: document.getElementById('registerHeight').value || null,
+                activity_level: document.getElementById('registerActivity').value,
+                fitness_goal: document.getElementById('registerGoal').value
+            };
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please login.');
+                    switchTab('login');
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
